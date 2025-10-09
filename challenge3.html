@@ -1,1 +1,182 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 3 - Metadata Investigation</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #00a000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 2rem auto;
+            border: 1px solid #00a000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #0f0;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            width: 100%;
+            margin-top: 0;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: left;
+            align-self: flex-start;
+            margin: 0.5rem 0;
+        }
+        
+        .objective h2 {
+            margin-top: 0;
+            color: #0f0;
+            text-align: center;
+        }
+
+        .hint {
+            color: #888;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        
+        .form-container {
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        #flag-input {
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            background-color: #010;
+            border: 1px solid #00a000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+        }
+
+        #flag-submit {
+            padding: 10px 20px;
+            background-color: #00a000;
+            border: 1px solid #00a000;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #flag-submit:hover {
+            background-color: #000;
+            color: #00a000;
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            height: 25px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: #0f0;
+        }
+
+        .message.error {
+            color: #f00;
+        }
+        
+        .download-button {
+            display: inline-block;
+            background-color: #0f0;
+            color: black;
+            border: 2px solid #0f0;
+            padding: 12px 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .download-button:hover {
+            background-color: black;
+            color: #0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <h1>Challenge 3: Metadata Investigation</h1>
+        <p>> Vector was arrogant. He believed no one would look deeper than the surface. Many digital files, especially photos, carry hidden data called metadata (EXIF). This data can include camera settings, timestamps, and even GPS coordinates. Sometimes, it can hide a secret message.</p>
+        <p>> One of Vector's last posts on InstaSnap was a moody picture of an exit sign, captioned "Time to go." This seems like exactly the kind of place he would hide a final taunt or a clue.</p>
+        
+        <div class="objective">
+            <h2>Your Mission</h2>
+            <p>Download the image of the exit sign. Use an online EXIF viewer to inspect its metadata. Search through all the data fields for anything that looks out of place or resembles a flag.</p>
+            <p class="hint">Recommended Tools: Use a site like exifinfo.org or onlineexifviewer.com to analyze the file.</p>
+            <a href="https://mapache101.github.io/ctf/instasnap/exit_sign.png" download class="download-button">DOWNLOAD EVIDENCE FILE</a>
+        </div>
+
+        <form id="flag-form" class="form-container">
+            <label for="flag-input">Enter Flag:</label>
+            <input type="text" id="flag-input" name="flag" required autocomplete="off">
+            <button type="submit" id="flag-submit">SUBMIT</button>
+        </form>
+
+        <div id="message-container" class="message"></div>
+        <div id="next-challenge-container"></div>
+    </div>
+
+    <script>
+        const flagForm = document.getElementById('flag-form');
+        const flagInput = document.getElementById('flag-input');
+        const messageContainer = document.getElementById('message-container');
+        const nextChallengeContainer = document.getElementById('next-challenge-container');
+        const correctFlag = 'flag{m3t4d4t4_m4dn3ss}';
+
+        flagForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const enteredFlag = flagInput.value.trim();
+
+            messageContainer.classList.remove('success', 'error');
+            nextChallengeContainer.innerHTML = ''; 
+
+            if (enteredFlag === correctFlag) {
+                messageContainer.textContent = 'FLAG ACCEPTED';
+                messageContainer.classList.add('success');
+                
+                const proceedButton = document.createElement('a');
+                proceedButton.href = 'challenge4.html'; // <<< LINK TO THE NEXT CHALLENGE
+                proceedButton.textContent = 'PROCEED TO CHALLENGE 4';
+                proceedButton.className = 'download-button'; // Re-using style for consistency
+                nextChallengeContainer.appendChild(proceedButton);
+
+            } else {
+                messageContainer.textContent = 'ACCESS DENIED: Incorrect Flag';
+                messageContainer.classList.add('error');
+            }
+        });
+    </script>
+
+</body>
+</html>
+
