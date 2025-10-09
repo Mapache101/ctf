@@ -1,1 +1,192 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 2.2 - The Leaked Memo</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #00a000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 2rem auto;
+            border: 1px solid #00a000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #0f0;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            width: 100%;
+            margin-top: 0;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: left;
+            align-self: flex-start;
+            margin: 0.5rem 0;
+        }
+
+        .objective {
+            border-top: 1px dashed #00a000;
+            border-bottom: 1px dashed #00a000;
+            padding: 1.5rem 0;
+            margin: 1.5rem 0;
+            width: 100%;
+        }
+        
+        .objective h2 {
+            margin-top: 0;
+            color: #0f0;
+            text-align: center;
+        }
+
+        .hint {
+            color: #888;
+            font-style: italic;
+            font-size: 1rem;
+        }
+        
+        .form-container {
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        #flag-input {
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            background-color: #010;
+            border: 1px solid #00a000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+        }
+
+        #flag-submit {
+            padding: 10px 20px;
+            background-color: #00a000;
+            border: 1px solid #00a000;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #flag-submit:hover {
+            background-color: #000;
+            color: #00a000;
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            height: 25px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: #0f0;
+        }
+
+        .message.error {
+            color: #f00;
+        }
+
+        .proceed-button {
+            display: inline-block;
+            background-color: #0f0;
+            color: black;
+            border: 2px solid #0f0;
+            padding: 12px 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .proceed-button:hover {
+            background-color: black;
+            color: #0f0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <h1>Level 2.2: The Leaked Memo</h1>
+        <p>> Intercepted communications suggest Vector and an internal accomplice were careless. They often used public text-sharing sites to exchange notes, thinking no one would ever find them.</p>
+        <p>> One of Vector's "friends" on InstaSnap mentioned a recent data leak on a site called PasteBin. This is your lead.</p>
+        
+        <div class="objective">
+            <h2>Your Mission</h2>
+            <p>Your objective is to find the leaked project notes. Use a search engine to your advantage. A well-crafted query is a powerful tool. You should search for information related to 'Vector' or his projects on `pastebin.com`.</p>
+            <p class="hint">Hint: The social media post gave you the keywords "Vector" and "PasteBin." Try combining those in a search engine like this: `Vector site:pastebin.com`</p>
+        </div>
+
+        <form id="flag-form" class="form-container">
+            <label for="flag-input">Enter Flag:</label>
+            <input type="text" id="flag-input" name="flag" required autocomplete="off">
+            <button type="submit" id="flag-submit">SUBMIT</button>
+        </form>
+
+        <div id="message-container" class="message"></div>
+        <div id="next-challenge-container"></div>
+    </div>
+
+    <script>
+        const flagForm = document.getElementById('flag-form');
+        const flagInput = document.getElementById('flag-input');
+        const messageContainer = document.getElementById('message-container');
+        const nextChallengeContainer = document.getElementById('next-challenge-container');
+        const correctFlag = 'flag{d4t4_1s_f0r3v3r}';
+
+        flagForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const enteredFlag = flagInput.value.trim();
+
+            messageContainer.classList.remove('success', 'error');
+            nextChallengeContainer.innerHTML = ''; // Clear previous button
+
+            if (enteredFlag === correctFlag) {
+                messageContainer.textContent = 'ACCESS GRANTED';
+                messageContainer.classList.add('success');
+                
+                // Create and display the proceed button
+                const proceedButton = document.createElement('a');
+                proceedButton.href = 'challenge3.html'; // <<< LINK TO THE NEXT CHALLENGE
+                proceedButton.textContent = 'PROCEED TO CHALLENGE 3';
+                proceedButton.className = 'proceed-button';
+                nextChallengeContainer.appendChild(proceedButton);
+
+            } else {
+                messageContainer.textContent = 'ACCESS DENIED: Incorrect Flag';
+                messageContainer.classList.add('error');
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
