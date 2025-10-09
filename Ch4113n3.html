@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Challenge 2 - Digital Footprint</title>
+    <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono" rel="stylesheet">
     <style>
         /* Basic styles for the page */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            background: #000;
-            color: #00a000;
+            background: url(https://image.ibb.co/h2hLAJ/bg.png) #000;
+            color: #00a000; /* Green for top section */
             font-family: 'Courier New', Courier, monospace;
         }
 
@@ -72,6 +73,117 @@
             background-color: black;
             color: #00a000;
         }
+
+        /* New styles inspired by the cyberpunk terminal */
+        .terminal-box {
+            font-family: 'Share Tech Mono', monospace;
+            color: #db0e15;
+            text-shadow: 0 0 5px rgba(219, 14, 21, .8);
+            border: 1px solid #db0e15;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(21, 1, 1, 0.5);
+        }
+
+        .terminal-box h2 {
+            margin-top: 0;
+            color: #db0e15;
+            text-align: left;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+        
+        .terminal-box p {
+            font-family: 'Share Tech Mono', monospace;
+            color: #db0e15;
+            text-shadow: 0 0 5px rgba(219, 14, 21, .8);
+        }
+
+        .terminal-form .row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .terminal-form .label {
+            width: 200px;
+            text-align: right;
+            padding-right: 1rem;
+        }
+
+        .terminal-form input {
+            border: 2px solid #d7001e;
+            padding: 10px;
+            width: 300px;
+            background: #000;
+            color: #db0e15;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+        }
+        
+        .terminal-form input:focus {
+            outline: 1px solid #d7001e;
+        }
+
+        .terminal-form button {
+            border: 1px solid #db0e15;
+            margin: 10px;
+            padding: 10px 40px;
+            cursor: pointer;
+            background: rgba(219, 14, 21, .2);
+            color: #db0e15;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .terminal-form button:hover {
+            background: #db0e15;
+            color: #000;
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            height: 25px;
+        }
+
+        .message.success {
+            color: #22edfc;
+            text-shadow: 0 0 5px #22edfc;
+        }
+
+        .message.error {
+            color: #db0e15;
+            text-shadow: 0 0 5px #db0e15;
+        }
+        
+        .flash {
+            animation: flashText 1s ease-out alternate infinite;
+        }
+
+        @keyframes flashText {
+            0% { opacity: .3; }
+            100% { opacity: 1; }
+        }
+
+        @media only screen and (max-width: 700px) {
+            .terminal-form .row {
+                flex-direction: column;
+            }
+            .terminal-form .label {
+                width: 100%;
+                text-align: center;
+                padding-right: 0;
+                margin-bottom: 0.5rem;
+            }
+            .terminal-form input {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -86,7 +198,85 @@
             <p>Scour Vector's InstaSnap profile for personal details. Look for anything that seems like a good password candidate or an answer to a common security question (e.g., first pet's name, birthday, etc.).</p>
             <a href="instasnap_profile.html" class="link-button" target="_blank">ACCESS VECTOR'S INSTASNAP PROFILE</a>
         </div>
+
+        <!-- Password Guessing Section -->
+        <div class="terminal-box">
+            <h2>System Access Portal</h2>
+            <form class="terminal-form" id="password-form">
+                <div class="row">
+                    <div class="label">Password</div>
+                    <input type="password" id="password-input" required autocomplete="new-password">
+                </div>
+                <div class="row">
+                    <button type="submit">[Login]</button>
+                </div>
+            </form>
+            <div id="password-message" class="message"></div>
+        </div>
+
+        <!-- Password Reset Section -->
+        <div class="terminal-box">
+            <h2>Password Recovery Sub-System</h2>
+            <form class="terminal-form" id="reset-form">
+                <p style="text-align: center; width:100%;">Security Question: What is the name of your first pet?</p>
+                <div class="row">
+                    <div class="label">Answer</div>
+                    <input type="text" id="reset-input" required>
+                </div>
+                <div class="row">
+                    <button type="submit">[Verify]</button>
+                </div>
+            </form>
+            <div id="reset-message" class="message"></div>
+        </div>
+
     </div>
+
+    <script>
+        const passwordForm = document.getElementById('password-form');
+        const passwordInput = document.getElementById('password-input');
+        const passwordMessage = document.getElementById('password-message');
+        const correctPassword = 'Sparky1506';
+
+        passwordForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const enteredPassword = passwordInput.value;
+            
+            passwordMessage.classList.remove('success', 'error', 'flash');
+
+            if (enteredPassword === correctPassword) {
+                passwordMessage.textContent = 'ACCESS GRANTED';
+                passwordMessage.classList.add('success');
+                // You can add a redirect or next step here
+            } else {
+                passwordMessage.textContent = 'ACCESS DENIED';
+                passwordMessage.classList.add('error', 'flash');
+            }
+        });
+
+
+        const resetForm = document.getElementById('reset-form');
+        const resetInput = document.getElementById('reset-input');
+        const resetMessage = document.getElementById('reset-message');
+        const correctAnswer = 'Sparky';
+
+        resetForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const enteredAnswer = resetInput.value;
+
+            resetMessage.classList.remove('success', 'error', 'flash');
+
+            // Case-insensitive check for the security question
+            if (enteredAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                resetMessage.textContent = 'VERIFICATION SUCCESSFUL';
+                resetMessage.classList.add('success');
+            } else {
+                resetMessage.textContent = 'INCORRECT ANSWER';
+                resetMessage.classList.add('error', 'flash');
+            }
+        });
+    </script>
 
 </body>
 </html>
+
