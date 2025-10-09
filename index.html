@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Cybersafe - Breach Protocol</title>
+    <style>
+        /* Basic styles for the page */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        /* Main container for the hacking animation */
+        .hacking-animation {
+            background: #000;
+            height: 100%;
+            cursor: default; /* Default cursor until animation ends */
+        }
+
+        /* Text container with preformatted text styles */
+        .hacking-animation .hacking-animation__text {
+            bottom: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            color: #00a000;
+            left: 0;
+            line-height: 1.5rem;
+            padding: 2rem;
+            position: absolute;
+            right: 0;
+            top: 0;
+            overflow-y: auto; /* Allow scrolling if text overflows */
+            white-space: pre-wrap; /* Wrap text and preserve whitespace */
+            word-wrap: break-word;
+        }
+
+        /* Individual character styling with animation */
+        .hacking-animation .hacking-animation__character {
+            animation: type 500ms linear;
+            color: #00a000;
+        }
+
+        /* Blinking cursor effect */
+        .blinking-cursor {
+            font-weight: bold;
+            color: #00a000;
+            animation: blink 1s step-start 0s infinite;
+        }
+
+        /* Keyframes for the typing animation */
+        @keyframes type {
+            0% {
+                background: #FFF;
+                color: #FFF;
+            }
+            5% {
+                background: transparent;
+                color: #FFF;
+            }
+            100% {
+                background: transparent;
+                color: #00a000;
+            }
+        }
+        
+        /* Keyframes for the cursor blink animation */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hacking-animation" id="animation-container">
+        <pre class="hacking-animation__text" id="hacking-text"></pre>
+    </div>
+
+    <!-- Include jQuery library from a CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // The story text to be displayed
+            const textString = `INITIALIZING...
+CONNECTION ESTABLISHED.
+INCOMING MESSAGE...
+
+///AuraGen AI - URGENT COMMUNIQUE///
+
+TO: Rapid-Response Tiger Team
+FROM: AuraGen AI - Security Division
+SUBJECT: Operation: Breach Protocol
+
+A disgruntled system administrator at the cutting-edge AI firm, AuraGen AI, has just been fired. 
+Before being escorted out, he threatened to leak the source code for their revolutionary new algorithm, 'Prometheus,' and claimed to have left behind numerous backdoors into the company's network. 
+
+AuraGen AI has hired you as a rapid-response 'tiger team' of ethical hackers. 
+
+Your mission is to conduct an emergency security audit. 
+You must find and patch all the vulnerabilities and backdoors the ex-employee, known only as 'Vector,' may have left behind. 
+Follow his digital trail, analyze his files, and secure the system before he can execute his threat. 
+
+The company's future is in your hands.
+
+...MESSAGE ENDS...
+
+> MISSION BRIEFING LOADED.
+> AWAITING YOUR COMMAND...`;
+
+            const textArray = textString.split('');
+            const textElem = $('#hacking-text');
+            let count = 0;
+
+            // Interval to simulate typing effect
+            const intervalId = setInterval(() => {
+                if (count < textArray.length) {
+                    if (textArray[count] === "\n") {
+                        textElem.append("<br>");
+                    } else {
+                        textElem.append(`<span class="hacking-animation__character">${textArray[count]}</span>`);
+                    }
+                    count++;
+                } else {
+                    // Stop the typing animation once done
+                    clearInterval(intervalId);
+                    
+                    // Add a blinking cursor for effect
+                    textElem.append('<span class="blinking-cursor">_</span>');
+
+                    // Create and append a button to proceed
+                    const continueButton = $('<button>BEGIN AUDIT</button>').css({
+                        'background-color': '#00a000',
+                        'color': 'black',
+                        'border': '2px solid #00a000',
+                        'padding': '10px 20px',
+                        'font-family': "'Courier New', Courier, monospace",
+                        'font-size': '16px',
+                        'font-weight': 'bold',
+                        'cursor': 'pointer',
+                        'display': 'block',
+                        'margin': '20px 0 0 0'
+                    }).hover(function() {
+                        $(this).css('background-color', 'black');
+                        $(this).css('color', '#00a000');
+                    }, function() {
+                        $(this).css('background-color', '#00a000');
+                        $(this).css('color', 'black');
+                    });
+
+                    textElem.append(continueButton);
+                    
+                    // Add click event to the button
+                    continueButton.click(function() {
+                        // This would redirect to the first challenge page.
+                        // Using a placeholder for now.
+                        alert("Proceeding to Challenge 1...");
+                        // window.location.href = 'challenge1.html'; // Uncomment this to link to the next page
+                    });
+                }
+            }, 25); // Typing speed in milliseconds
+        });
+    </script>
+
+</body>
+</html>
