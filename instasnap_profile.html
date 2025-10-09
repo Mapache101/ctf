@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector's InstaSnap Profile</title>
+    <!-- Using Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A simple style for the gradient header */
+        .insta-header {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header -->
+    <header class="insta-header shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <h1 class="text-white text-2xl font-bold font-mono">InstaSnap</h1>
+            <div class="text-white">
+                <!-- Non-functional search bar for aesthetics -->
+                <input type="text" placeholder="Search..." class="bg-white bg-opacity-25 rounded-md px-2 py-1 text-sm placeholder-white" disabled>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Profile Section -->
+    <main class="container mx-auto p-4 md:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Profile Picture -->
+            <div class="flex items-start justify-center">
+                <img id="profile-pic" src="https://placehold.co/150x150/2d3748/ffffff?text=Vector" alt="Vector's Profile Picture" class="rounded-full border-4 border-gray-300 shadow-lg">
+            </div>
+
+            <!-- Profile Info -->
+            <div class="md:col-span-2">
+                <div class="flex items-center space-x-4 mb-4">
+                    <h2 class="text-3xl font-light text-gray-700">Vector</h2>
+                    <button class="bg-blue-500 text-white px-4 py-1 rounded-md text-sm font-semibold">Follow</button>
+                </div>
+                <div class="flex space-x-8 mb-4">
+                    <p><span class="font-semibold">12</span> posts</p>
+                    <p><span class="font-semibold">404</span> followers</p>
+                    <p><span class="font-semibold">1</span> following</p>
+                </div>
+                <div>
+                    <p class="font-bold">Vector</p>
+                    <p class="text-gray-600">SysAdmin @ AuraGen AI | Code, Coffee, and Chaos | All systems running... for now.</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mt-8 mb-8 border-gray-300">
+
+        <!-- Posts Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="retro-pc-pic" src="https://placehold.co/600x600/38b2ac/ffffff?text=Retro+Tech" alt="An old retro computer" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Where it all began. They don't make them like this anymore.</p>
+                </div>
+            </div>
+
+            <!-- Post 1: Pet's Name (CLUE) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="dog-pic" src="https://placehold.co/600x600/a0aec0/ffffff?text=Dog+Photo" alt="A dog sitting next to a computer" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <p><span class="font-bold">Vector</span> My best studio assistant, Sparky!</p>
+                </div>
+            </div>
+            
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://placehold.co/600x600/f56565/ffffff?text=Error" alt="A screen with an error message" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> My life in a single image. #SysAdminLife</p>
+                </div>
+            </div>
+
+            <!-- Post 2: Favorite Band (CLUE) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="desk-pic" src="https://placehold.co/600x600/4a5568/ffffff?text=Code+Setup" alt="A computer desk with code on screen" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Listening to The Algorithm on repeat while I code. #focus</p>
+                </div>
+            </div>
+
+            <!-- Post (Filler) -->
+             <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="keyboard-pic" src="https://placehold.co/600x600/ed8936/ffffff?text=New+Keyboard" alt="A mechanical keyboard with RGB lighting" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <p><span class="font-bold">Vector</span> New keyboard day! The sound of progress.</p>
+                </div>
+            </div>
+
+            <!-- Post 3: Birthday (CLUE) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="cake-pic" src="https://placehold.co/600x600/9f7aea/ffffff?text=Celebration" alt="Abstract digital art" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Celebrating another year! Can't believe it's June 15th already!</p>
+                </div>
+            </div>
+
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://placehold.co/600x600/4fd1c5/ffffff?text=Coffee" alt="A cup of coffee" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Fuel for the machine.</p>
+                </div>
+            </div>
+            
+            <!-- Post 4: Leaked Memo Clue (CLUE) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="server-pic" src="https://placehold.co/600x600/718096/ffffff?text=Server+Room" alt="A server room" class="w-full h-64 object-cover">
+                <div class="p-4 space-y-3">
+                    <p><span class="font-bold">Vector</span> Another day, another server rack.</p>
+                    <!-- The important clue is in the comments -->
+                    <div class="text-sm text-gray-600">
+                        <p><span class="font-semibold text-gray-800">AuraGen_Insider:</span> Hey @Vector, I can't believe our project notes got leaked on PasteBin again! So embarrassing.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="movie-pic" src="https://placehold.co/600x600/d53f8c/ffffff?text=Movie+Poster" alt="A retro sci-fi movie poster" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Movie night. Nothing beats the classics. They knew how to tell a story.</p>
+                </div>
+            </div>
+            
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="whiteboard-pic" src="https://placehold.co/600x600/667eea/ffffff?text=Diagram" alt="A complex network diagram on a whiteboard" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Sometimes you just have to map it all out.</p>
+                </div>
+            </div>
+            
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="update-pic" src="https://placehold.co/600x600/f6e05e/000000?text=Update+Failed" alt="A software update progress bar that is stuck" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> "Minor" update, they said. It'll be "quick", they said. My whole weekend, gone.</p>
+                </div>
+            </div>
+
+            <!-- Post (Filler) -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img id="exit-pic" src="https://placehold.co/600x600/000000/ffffff?text=...?" alt="A dark and moody picture of a door or exit sign" class="w-full h-64 object-cover">
+                 <div class="p-4">
+                    <p><span class="font-bold">Vector</span> Big changes are coming. Time to find a new door.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>
+
