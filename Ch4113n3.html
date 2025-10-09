@@ -214,8 +214,8 @@
             <div id="password-message" class="message"></div>
         </div>
 
-        <!-- Password Reset Section -->
-        <div class="terminal-box">
+        <!-- Password Reset Section (initially hidden) -->
+        <div class="terminal-box" id="reset-section" style="display: none;">
             <h2>Password Recovery Sub-System</h2>
             <form class="terminal-form" id="reset-form">
                 <p style="text-align: center; width:100%;">Security Question: What is the name of your first pet?</p>
@@ -228,6 +228,7 @@
                 </div>
             </form>
             <div id="reset-message" class="message"></div>
+            <div id="next-challenge-link-container"></div>
         </div>
 
     </div>
@@ -247,10 +248,12 @@
             if (enteredPassword === correctPassword) {
                 passwordMessage.textContent = 'ACCESS GRANTED';
                 passwordMessage.classList.add('success');
-                // You can add a redirect or next step here
+                // On correct password, you could also provide a link or auto-redirect
             } else {
                 passwordMessage.textContent = 'ACCESS DENIED';
                 passwordMessage.classList.add('error', 'flash');
+                // Show the password recovery section on failure
+                document.getElementById('reset-section').style.display = 'block';
             }
         });
 
@@ -270,6 +273,11 @@
             if (enteredAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
                 resetMessage.textContent = 'VERIFICATION SUCCESSFUL';
                 resetMessage.classList.add('success');
+                
+                // Show the link to the next challenge
+                const linkContainer = document.getElementById('next-challenge-link-container');
+                linkContainer.innerHTML = `<a href="leakMm.html" class="link-button" style="background-color: #22edfc; color: #000; border-color: #22edfc; margin-top: 20px;">PROCEED TO LEAKED MEMO</a>`;
+
             } else {
                 resetMessage.textContent = 'INCORRECT ANSWER';
                 resetMessage.classList.add('error', 'flash');
