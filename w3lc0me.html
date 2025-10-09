@@ -61,7 +61,7 @@
             font-size: 1.2rem;
         }
 
-        .submission-area input[type="text"] {
+        .submission-area input[text] {
             width: 100%;
             padding: 10px;
             background-color: #111;
@@ -72,13 +72,13 @@
             box-sizing: border-box; /* Ensures padding doesn't affect width */
         }
         
-        .submission-area input[type="text"]:focus {
+        .submission-area input[text]:focus {
             outline: none;
             border-color: #0f0;
             box-shadow: 0 0 10px #0f0;
         }
 
-        .submission-area button {
+        .submission-area button, #next-challenge-btn {
             background-color: #00a000;
             color: black;
             border: 2px solid #00a000;
@@ -91,7 +91,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .submission-area button:hover {
+        .submission-area button:hover, #next-challenge-btn:hover {
             background-color: black;
             color: #00a000;
         }
@@ -137,7 +137,7 @@
             // Prevent the form from actually submitting and reloading the page
             event.preventDefault();
 
-            // The correct flag for this challenge (based on the project document)
+            // The correct flag for this challenge
             const correctFlag = 'w3lc0me_t34';
             
             // Get the user's input from the text field
@@ -149,14 +149,14 @@
                 feedbackElement.textContent = 'ACCESS GRANTED. Flag correct.';
                 feedbackElement.className = 'success';
                 
-                // Optional: You can add a button to proceed to the next challenge
+                // Add a button to proceed to the next challenge
                 if (!document.getElementById('next-challenge-btn')) {
                     const nextButton = document.createElement('button');
                     nextButton.textContent = 'PROCEED TO CHALLENGE 2';
                     nextButton.id = 'next-challenge-btn';
                     nextButton.onclick = function() {
-                        // alert('Redirecting to the next challenge...');
-                        // window.location.href = 'challenge2.html'; // Link to the next page
+                        // Link to the next page
+                        window.location.href = 'Ch4113n3.html';
                     };
                     feedbackElement.parentNode.appendChild(nextButton);
                 }
@@ -170,3 +170,4 @@
 
 </body>
 </html>
+
