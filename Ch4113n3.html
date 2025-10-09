@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 2 - Digital Footprint</title>
+    <style>
+        /* Basic styles for the page */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #00a000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Main container with padding and flexbox for centering */
+        .content-wrapper {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #0f0;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            width: 100%;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: left;
+            align-self: flex-start;
+        }
+
+        .task {
+            border: 1px solid #00a000;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .task h2 {
+            margin-top: 0;
+            color: #0f0;
+        }
+
+        .link-button {
+            display: inline-block;
+            background-color: #00a000;
+            color: black;
+            border: 2px solid #00a000;
+            padding: 12px 25px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .link-button:hover {
+            background-color: black;
+            color: #00a000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <h1>Challenge 2: Digital Footprint Analysis</h1>
+        <p>> Our target, "Vector", was active on social media. People often share more than they should online, creating a digital footprint that can be followed. This is a common technique in Open-Source Intelligence (OSINT).</p>
+        <p>> We've located Vector's primary social media profile on a site called InstaSnap. Your task is to analyze his profile and posts to find information that could be used to guess his password or answer a security question.</p>
+        
+        <div class="task">
+            <h2>Your Objective</h2>
+            <p>Scour Vector's InstaSnap profile for personal details. Look for anything that seems like a good password candidate or an answer to a common security question (e.g., first pet's name, birthday, etc.).</p>
+            <a href="instasnap_profile.html" class="link-button" target="_blank">ACCESS VECTOR'S INSTASNAP PROFILE</a>
+        </div>
+    </div>
+
+</body>
+</html>
