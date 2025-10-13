@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Hide scrollbars caused by canvas */
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place canvas behind everything else */
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box; /* Include padding in height calculation */
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 2rem;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
+            background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent background to see the matrix rain */
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 3em;
+            text-shadow: 0 0 8px #00ff00;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.8em;
+            color: #5eff5e;
+        }
+        p {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+        .ciphertext {
+            background-color: #0d0d0d;
+            padding: 1em;
+            border: 1px dashed #00ff00;
+            word-wrap: break-word; /* Ensures the long string wraps correctly */
+            font-weight: bold;
+            font-size: 1.5em;
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+        
+        .input-area {
+            margin: 2em 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #answer-input {
+            background-color: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            font-size: 1.2em;
+            padding: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.5);
+            text-align: center;
+        }
+
+        #answer-input::placeholder {
+            color: #008a00;
+            opacity: 0.7;
+        }
+
+        #submit-btn {
+            background-color: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            font-size: 1.3em;
+            padding: 10px 30px;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ff00;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        #submit-btn:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        #feedback-message {
+            margin-top: 0;
+            font-size: 1.2em;
+            height: 20px; /* Reserve space to prevent layout shift */
+            font-weight: bold;
+        }
+
+        .hint {
+            margin-top: 1em;
+            font-style: italic;
+            color: #000000; /* Black text for the hidden hint */
+            font-size: 1.2em;
+            user-select: none; /* Makes it slightly harder to discover accidentally */
+        }
+         .hint::selection {
+            background-color: #00ff00; /* Green background when highlighted */
+            color: #000000; /* Black text when highlighted */
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        [SYSTEM] You are getting warmer... The source is always a good place to look.
+        [DECRYPTION] "The next clue is hidden in the source code."
+        
+        [FLAG FRAGMENT] very_
+
+        [CURRENT FLAG] The_password_is_very_
+        
+        [NEXT LOCATION] final_challenge.html
+    -->
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="content-wrapper">
+        <div class="container">
+            <h1>Challenge 4: The Final Message</h1>
+            <h2>[TRANSMISSION INTERCEPT]</h2>
+            <p>This message was intercepted from one of Vector's minions. The transmission is completely garbled, but there must be a pattern to the madness.</p>
+            <p class="ciphertext">
+                Ymj sjcy hqzi nx mniijs ns ymj xtzwgj htij.
+            </p>
+
+            <div class="input-area">
+                <input type="text" id="answer-input" placeholder="Enter decrypted message..." autocomplete="off">
+                <button id="submit-btn">DECRYPT</button>
+            </div>
+            <p id="feedback-message"></p>
+            
+            <p class="hint">
+                Maybe the Romans can help you shift your perspective.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const alphabet = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const rainDrops = [];
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+        setInterval(draw, 30);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- Challenge Logic ---
+        const submitBtn = document.getElementById('submit-btn');
+        const answerInput = document.getElementById('answer-input');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        // The correct answer, without the final period.
+        const correctAnswer = "The next clue is hidden in the source code";
+
+        const checkAnswer = () => {
+            // Normalize by trimming whitespace, removing periods, and making it lowercase.
+            const userAnswer = answerInput.value.trim().replace(/\.$/, '').toLowerCase();
+            if (userAnswer === correctAnswer.toLowerCase()) {
+                feedbackMessage.textContent = "[ACCESS GRANTED] You've proven your skill. Now check the source.";
+                feedbackMessage.style.color = '#00ff00';
+            } else {
+                feedbackMessage.textContent = "[ACCESS DENIED] Incorrect decryption protocol.";
+                feedbackMessage.style.color = '#ff0000'; // Red for incorrect
+            }
+        };
+
+        submitBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
+
