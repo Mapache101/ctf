@@ -146,7 +146,7 @@
 
         <form id="flag-form" class="form-container">
             <label for="flag-input">Enter Flag:</label>
-            <input type="text" id="flag-input" name="flag" required autocomplete="off">
+            <input type="text" id="flag-input" name="flag" required autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false">
             <button type="submit" id="flag-submit">SUBMIT</button>
         </form>
 
@@ -159,7 +159,7 @@
         const flagInput = document.getElementById('flag-input');
         const messageContainer = document.getElementById('message-container');
         const nextChallengeContainer = document.getElementById('next-challenge-container');
-        const correctFlag = 'flag{d4t4_1s_f0r3v3r}';
+        const correctFlag = 'ZmxhZ3tkNHQ0XzFzX2YwcjN2M3J9'; // Base64 for 'flag{d4t4_1s_f0r3v3r}'
 
         flagForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -168,7 +168,7 @@
             messageContainer.classList.remove('success', 'error');
             nextChallengeContainer.innerHTML = ''; // Clear previous button
 
-            if (enteredFlag === correctFlag) {
+            if (enteredFlag === atob(correctFlag)) {
                 messageContainer.textContent = 'ACCESS GRANTED';
                 messageContainer.classList.add('success');
                 
