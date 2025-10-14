@@ -199,7 +199,6 @@
             <a href="instasnap_profile.html" class="link-button" target="_blank">ACCESS VECTOR'S INSTASNAP PROFILE</a>
         </div>
 
-        <!-- Password Guessing Section -->
         <div class="terminal-box">
             <h2>System Access Portal</h2>
             <form class="terminal-form" id="password-form">
@@ -214,14 +213,13 @@
             <div id="password-message" class="message"></div>
         </div>
 
-        <!-- Password Reset Section (initially hidden) -->
         <div class="terminal-box" id="reset-section" style="display: none;">
             <h2>Password Recovery Sub-System</h2>
             <form class="terminal-form" id="reset-form">
                 <p style="text-align: center; width:100%;">Security Question: What is the name of your first pet?</p>
                 <div class="row">
                     <div class="label">Answer</div>
-                    <input type="text" id="reset-input" required>
+                    <input type="text" id="reset-input" required autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false">
                 </div>
                 <div class="row">
                     <button type="submit">[Verify]</button>
@@ -237,7 +235,7 @@
         const passwordForm = document.getElementById('password-form');
         const passwordInput = document.getElementById('password-input');
         const passwordMessage = document.getElementById('password-message');
-        const correctPassword = 'Sparky1506';
+        const correctPassword = 'U3Bhcmt5MTUwNg=='; // Base64 for 'Sparky1506'
 
         passwordForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -245,7 +243,7 @@
             
             passwordMessage.classList.remove('success', 'error', 'flash');
 
-            if (enteredPassword === correctPassword) {
+            if (enteredPassword === atob(correctPassword)) {
                 passwordMessage.textContent = 'ACCESS GRANTED';
                 passwordMessage.classList.add('success');
                 // On correct password, you could also provide a link or auto-redirect
@@ -261,7 +259,7 @@
         const resetForm = document.getElementById('reset-form');
         const resetInput = document.getElementById('reset-input');
         const resetMessage = document.getElementById('reset-message');
-        const correctAnswer = 'Sparky';
+        const correctAnswer = 'U3Bhcmt5'; // Base64 for 'Sparky'
 
         resetForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -270,7 +268,7 @@
             resetMessage.classList.remove('success', 'error', 'flash');
 
             // Case-insensitive check for the security question
-            if (enteredAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+            if (enteredAnswer.trim().toLowerCase() === atob(correctAnswer).toLowerCase()) {
                 resetMessage.textContent = 'VERIFICATION SUCCESSFUL';
                 resetMessage.classList.add('success');
                 
@@ -287,4 +285,3 @@
 
 </body>
 </html>
-
