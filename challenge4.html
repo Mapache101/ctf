@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Challenge 4</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,7 +15,7 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Hide scrollbars caused by canvas */
+            overflow: hidden;
         }
 
         #matrix-canvas {
@@ -24,7 +24,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Place canvas behind everything else */
+            z-index: -1;
         }
 
         .content-wrapper {
@@ -33,7 +33,7 @@
             align-items: center;
             height: 100vh;
             padding: 2rem;
-            box-sizing: border-box; /* Include padding in height calculation */
+            box-sizing: border-box;
         }
 
         .container {
@@ -42,7 +42,7 @@
             padding: 2rem;
             border: 2px solid #00ff00;
             box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
-            background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent background to see the matrix rain */
+            background-color: rgba(0, 0, 0, 0.85);
             border-radius: 8px;
         }
         h1 {
@@ -54,6 +54,10 @@
             font-size: 1.8em;
             color: #5eff5e;
         }
+        h3 {
+            font-size: 1.5em;
+            margin-bottom: 1em;
+        }
         p {
             font-size: 1.4em;
             line-height: 1.6;
@@ -62,7 +66,7 @@
             background-color: #0d0d0d;
             padding: 1em;
             border: 1px dashed #00ff00;
-            word-wrap: break-word; /* Ensures the long string wraps correctly */
+            word-wrap: break-word;
             font-weight: bold;
             font-size: 1.5em;
             color: #fff;
@@ -77,7 +81,7 @@
             gap: 15px;
         }
 
-        #answer-input {
+        input[type="text"], input[type="password"] {
             background-color: #1a1a1a;
             border: 1px solid #00ff00;
             color: #00ff00;
@@ -90,12 +94,12 @@
             text-align: center;
         }
 
-        #answer-input::placeholder {
+        input::placeholder {
             color: #008a00;
             opacity: 0.7;
         }
 
-        #submit-btn {
+        button {
             background-color: transparent;
             border: 2px solid #00ff00;
             color: #00ff00;
@@ -107,83 +111,115 @@
             transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
         }
 
-        #submit-btn:hover {
+        button:hover {
             background-color: #00ff00;
             color: #000;
             box-shadow: 0 0 20px #00ff00;
         }
 
-        #feedback-message {
+        .feedback-message {
             margin-top: 0;
             font-size: 1.2em;
-            height: 20px; /* Reserve space to prevent layout shift */
+            height: 20px;
             font-weight: bold;
         }
 
         .hint {
             margin-top: 1em;
             font-style: italic;
-            color: #000000; /* Black text for the hidden hint */
             font-size: 1.2em;
-            user-select: none; /* Makes it slightly harder to discover accidentally */
+            user-select: none;
         }
-         .hint::selection {
-            background-color: #00ff00; /* Green background when highlighted */
-            color: #000000; /* Black text when highlighted */
+        
+        #hint1 {
+             color: #000000;
+        }
+        #hint1::selection {
+            background-color: #00ff00;
+            color: #000000;
+        }
+        #hint2 {
+            color: #a0a0a0;
+        }
+        
+        #next-challenge-link a {
+            display: inline-block;
+            margin-top: 1em;
+            padding: 15px 30px;
+            font-size: 1.4em;
+            color: #000;
+            background-color: #00ff00;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 0 15px #00ff00;
+            transition: transform 0.2s;
+        }
+        #next-challenge-link a:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
-    <!--
-        [SYSTEM] You are getting warmer... The source is always a good place to look.
-        [DECRYPTION] "The next clue is hidden in the source code."
-        
-        [FLAG FRAGMENT] very_
-
-        [CURRENT FLAG] The_password_is_very_
-        
-        [NEXT LOCATION] final_challenge.html
+    <!-- 
+        Nice work looking here. The answer to the first puzzle is on the page itself.
+        Once you solve it, you'll see what you need to do next. Good luck.
     -->
 
     <canvas id="matrix-canvas"></canvas>
 
     <div class="content-wrapper">
         <div class="container">
-            <h1>Challenge 4: The Final Message</h1>
-            <h2>[TRANSMISSION INTERCEPT]</h2>
-            <p>This message was intercepted from one of Vector's minions. The transmission is completely garbled, but there must be a pattern to the madness.</p>
-            <p class="ciphertext">
-                Ymj sjcy hqzi nx mniijs ns ymj xtzwgj htij.
-            </p>
-
-            <div class="input-area">
-                <input type="text" id="answer-input" placeholder="Enter decrypted message..." autocomplete="off">
-                <button id="submit-btn">DECRYPT</button>
+            <!-- Challenge Part 1: Caesar Cipher -->
+            <div id="challenge-part-1">
+                <h1>Challenge 4.1: Intercept</h1>
+                <h2>[TRANSMISSION INTERCEPT]</h2>
+                <p>This message was intercepted from one of Vector's minions. The transmission is completely garbled, but there must be a pattern to the madness.</p>
+                <p class="ciphertext">
+                    Ymj sjcy hqzj nx mniijs ns ymj xtzwhj htij
+                </p>
+                <div class="input-area">
+                    <input type="text" id="answer-input" placeholder="Enter decrypted message..." autocomplete="off">
+                    <button id="submit-btn">DECRYPT</button>
+                </div>
+                <p id="feedback-message" class="feedback-message"></p>
+                <p id="hint1" class="hint">
+                    Maybe the Romans can help you shift your perspective.
+                </p>
             </div>
-            <p id="feedback-message"></p>
-            
-            <p class="hint">
-                Maybe the Romans can help you shift your perspective.
-            </p>
+
+            <!-- Challenge Part 2: Base64 -->
+            <div id="challenge-part-2" style="display: none;">
+                <h1>Challenge 4.2: Decoded</h1>
+                <h2>Fragment of a Corrupted Log File</h2>
+                <p>The decrypted message revealed another data fragment. This looks like a log entry, but it's not human-readable.</p>
+                <p class="ciphertext">VGhlIHBhc3N3b3JkIGlzICdhZG1pbicu</p>
+                <p id="hint2" class="hint">This isn't encrypted, it's just in a different format for transport.</p>
+                <div class="input-area">
+                    <h3>[SYSTEM LOGIN REQUIRED]</h3>
+                    <input type="text" id="username-input" placeholder="Username..." autocomplete="off">
+                    <input type="password" id="password-input" placeholder="Password..." autocomplete="off">
+                    <button id="login-btn">AUTHENTICATE</button>
+                </div>
+                <p id="login-feedback" class="feedback-message"></p>
+                <div id="next-challenge-link" style="display: none;">
+                    <p>Authentication successful. Accessing next module...</p>
+                    <a href="final_challenge.html">Proceed to Final Challenge</a>
+                </div>
+            </div>
         </div>
     </div>
     
     <script>
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
         const alphabet = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         const fontSize = 16;
         const columns = canvas.width / fontSize;
         const rainDrops = [];
-        for (let x = 0; x < columns; x++) {
-            rainDrops[x] = 1;
-        }
-
+        for (let x = 0; x < columns; x++) { rainDrops[x] = 1; }
         const draw = () => {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -192,49 +228,73 @@
             for (let i = 0; i < rainDrops.length; i++) {
                 const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
                 ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    rainDrops[i] = 0;
-                }
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) { rainDrops[i] = 0; }
                 rainDrops[i]++;
             }
         };
         setInterval(draw, 30);
-
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
 
         // --- Challenge Logic ---
+
+        // Part 1 Elements
+        const challengePart1 = document.getElementById('challenge-part-1');
         const submitBtn = document.getElementById('submit-btn');
         const answerInput = document.getElementById('answer-input');
         const feedbackMessage = document.getElementById('feedback-message');
-        
-        // The correct answer, without the final period.
         const correctAnswer = "The next clue is hidden in the source code";
 
+        // Part 2 Elements
+        const challengePart2 = document.getElementById('challenge-part-2');
+        const loginBtn = document.getElementById('login-btn');
+        const passwordInput = document.getElementById('password-input');
+        const loginFeedback = document.getElementById('login-feedback');
+        const nextChallengeLink = document.getElementById('next-challenge-link');
+        const correctPassword = "admin";
+
+        // --- Part 1 Logic: Caesar Cipher ---
         const checkAnswer = () => {
-            // Normalize by trimming whitespace, removing periods, and making it lowercase.
-            const userAnswer = answerInput.value.trim().replace(/\.$/, '').toLowerCase();
+            const userAnswer = answerInput.value.trim().toLowerCase();
             if (userAnswer === correctAnswer.toLowerCase()) {
-                feedbackMessage.textContent = "[ACCESS GRANTED] You've proven your skill. Now check the source.";
+                feedbackMessage.textContent = "[ACCESS GRANTED] Decryption successful. Loading next fragment...";
                 feedbackMessage.style.color = '#00ff00';
+                setTimeout(() => {
+                    challengePart1.style.display = 'none';
+                    challengePart2.style.display = 'block';
+                }, 1000); // Wait 1 second before showing part 2
             } else {
                 feedbackMessage.textContent = "[ACCESS DENIED] Incorrect decryption protocol.";
-                feedbackMessage.style.color = '#ff0000'; // Red for incorrect
+                feedbackMessage.style.color = '#ff0000';
             }
         };
 
         submitBtn.addEventListener('click', checkAnswer);
         answerInput.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                checkAnswer();
+            if (event.key === 'Enter') { checkAnswer(); }
+        });
+
+        // --- Part 2 Logic: Base64/Login ---
+        const checkLogin = () => {
+            if (passwordInput.value.trim() === correctPassword) {
+                loginFeedback.textContent = "[AUTHENTICATION SUCCESS]";
+                loginFeedback.style.color = '#00ff00';
+                document.querySelector('#challenge-part-2 .input-area').style.display = 'none'; // Hide login form
+                nextChallengeLink.style.display = 'block'; // Show link
+            } else {
+                loginFeedback.textContent = "[AUTHENTICATION FAILED]";
+                loginFeedback.style.color = '#ff0000';
             }
+        };
+
+        loginBtn.addEventListener('click', checkLogin);
+        passwordInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') { checkLogin(); }
         });
 
     </script>
 </body>
 </html>
-
-
 
