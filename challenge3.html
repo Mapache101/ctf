@@ -138,7 +138,7 @@
 
         <form id="flag-form" class="form-container">
             <label for="flag-input">Enter Flag:</label>
-            <input type="text" id="flag-input" name="flag" required autocomplete="off">
+            <input type="text" id="flag-input" name="flag" required autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false">
             <button type="submit" id="flag-submit">SUBMIT</button>
         </form>
 
@@ -151,7 +151,7 @@
         const flagInput = document.getElementById('flag-input');
         const messageContainer = document.getElementById('message-container');
         const nextChallengeContainer = document.getElementById('next-challenge-container');
-        const correctFlag = 'flag{m3t4d4t4_m4dn3ss}';
+        const correctFlag = 'ZmxhZ3ttM3Q0ZDR0NF9tNGRuM3NzfQ=='; // Base64
 
         flagForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -160,13 +160,13 @@
             messageContainer.classList.remove('success', 'error');
             nextChallengeContainer.innerHTML = ''; 
 
-            if (enteredFlag === correctFlag) {
+            if (enteredFlag === atob(correctFlag)) {
                 messageContainer.textContent = 'FLAG ACCEPTED';
                 messageContainer.classList.add('success');
                 
                 const proceedButton = document.createElement('a');
-                proceedButton.href = 'challenge4.html'; // <<< LINK TO THE NEXT CHALLENGE
-                proceedButton.textContent = 'PROCEED TO CHALLENGE 4';
+                proceedButton.href = 'challenge4.html'; 
+                proceedButton.textContent = 'PROCEED TO NEXT CHALLENGE';
                 proceedButton.className = 'download-button'; // Re-using style for consistency
                 nextChallengeContainer.appendChild(proceedButton);
 
@@ -179,4 +179,3 @@
 
 </body>
 </html>
-
