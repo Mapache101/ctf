@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Challenge Submission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .container-glow {
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
+        }
+        .input-glow:focus {
+            outline: none;
+            border-color: #2dd4bf;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+        }
+        .btn-glow {
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.7);
+            transform: translateY(-2px);
+        }
+        .terminal-text {
+             color: #2dd4bf;
+        }
+        .submission-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen py-12">
+    <div class="w-full max-w-2xl mx-auto p-8 bg-[#161b22] rounded-lg border border-gray-700 container-glow">
+        <h1 class="text-4xl text-center mb-2 terminal-text">> Capture The Flag Challenge_</h1>
+        <p class="text-center text-gray-400 mb-8">Enter the required information to save your submission.</p>
+
+        <form id="ctf-form">
+            <!-- Hidden timestamp field -->
+            <input type="hidden" id="timestamp" name="timestamp">
+
+            <!-- Student Name -->
+            <div class="mb-6">
+                <label for="student-name" class="block mb-2 text-lg terminal-text">C:\Users\Student> Student Name/s</label>
+                <input type="text" id="student-name" name="studentName" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="e.g., Alex Smith, Jane Doe">
+            </div>
+
+            <!-- Flags Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label for="flag1" class="block mb-2 text-lg terminal-text">> Flag 1</label>
+                    <input type="text" id="flag1" name="flag1" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+                <div>
+                    <label for="flag2" class="block mb-2 text-lg terminal-text">> Flag 2</label>
+                    <input type="text" id="flag2" name="flag2" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+                <div>
+                    <label for="flag3" class="block mb-2 text-lg terminal-text">> Flag 3</label>
+                    <input type="text" id="flag3" name="flag3" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+                <div>
+                    <label for="flag4" class="block mb-2 text-lg terminal-text">> Flag 4</label>
+                    <input type="text" id="flag4" name="flag4" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+                 <div>
+                    <label for="flag5" class="block mb-2 text-lg terminal-text">> Flag 5</label>
+                    <input type="text" id="flag5" name="flag5" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+                 <div>
+                    <label for="flag6" class="block mb-2 text-lg terminal-text">> Flag 6</label>
+                    <input type="text" id="flag6" name="flag6" class="w-full px-4 py-2 bg-[#0d1117] border border-gray-600 rounded-md focus:border-teal-400 input-glow" required placeholder="CTF{...}">
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" id="submit-button" class="w-full py-3 text-xl font-bold bg-teal-500 text-gray-900 rounded-md hover:bg-teal-400 btn-glow">
+                Save Submission
+            </button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-message" class="hidden mt-6 p-4 text-center bg-green-900/50 border border-green-500 rounded-md">
+            <p>Success! Your submission has been saved.</p>
+        </div>
+        
+        <!-- Submissions Log -->
+        <div class="mt-12">
+            <h2 class="text-3xl text-center mb-6 terminal-text">> Submissions Log_</h2>
+            <div id="submissions-log" class="space-y-4">
+                <p class="text-center text-gray-500">Initializing connection to database...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        // These variables are provided by the environment.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ctf-challenge-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+        
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            document.getElementById('submissions-log').innerHTML = '<p class="text-center text-red-500">Error: Could not connect to the database. Please check the console.</p>';
+        }
+
+        async function main() {
+             if (!db || !auth) return;
+
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Authentication Failed:", error);
+                document.getElementById('submissions-log').innerHTML = '<p class="text-center text-red-500">Authentication failed. Submissions cannot be saved or viewed.</p>';
+                return;
+            }
+
+            const submissionsLog = document.getElementById('submissions-log');
+            const submissionsCollection = collection(db, `artifacts/${appId}/public/data/submissions`);
+            
+            // --- Listen for real-time submission updates ---
+            const q = query(submissionsCollection);
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    submissionsLog.innerHTML = '<p class="text-center text-gray-500">No submissions yet. Be the first!</p>';
+                    return;
+                }
+
+                submissionsLog.innerHTML = ''; // Clear previous entries
+                snapshot.docs.forEach(doc => {
+                    const submission = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'submission-card animate-fade-in';
+                    
+                    let content = `<span class="terminal-text">Student(s):</span> ${submission.studentName}\n`;
+                    content += `<span class="terminal-text">Start Time:</span> ${new Date(submission.startTime).toLocaleString()}\n`;
+                    content += `<span class="terminal-text">Submit Time:</span> ${submission.submissionTime ? new Date(submission.submissionTime.toDate()).toLocaleString() : 'N/A'}\n\n`;
+                    content += `--- Flags ---\n`;
+                    for(let i = 1; i <= 6; i++) {
+                        content += `Flag ${i}: ${submission.flags['flag' + i] || 'Not provided'}\n`;
+                    }
+                    
+                    card.textContent = content;
+                    submissionsLog.prepend(card); // Add new submissions to the top
+                });
+            });
+
+            // --- Handle Form Submission ---
+            const ctfForm = document.getElementById('ctf-form');
+            const successMessage = document.getElementById('success-message');
+            const submitButton = document.getElementById('submit-button');
+
+            document.getElementById('timestamp').value = new Date().toISOString();
+
+            ctfForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                submitButton.disabled = true;
+                submitButton.textContent = 'Saving...';
+                
+                const formData = new FormData(ctfForm);
+                const flagsData = {};
+                for(let i=1; i<=6; i++) {
+                    flagsData['flag' + i] = formData.get('flag' + i);
+                }
+                
+                const submissionData = {
+                    studentName: formData.get('studentName'),
+                    startTime: formData.get('timestamp'),
+                    submissionTime: serverTimestamp(),
+                    flags: flagsData
+                };
+
+                try {
+                    await addDoc(submissionsCollection, submissionData);
+                    
+                    successMessage.classList.remove('hidden');
+                    ctfForm.reset();
+                    document.getElementById('timestamp').value = new Date().toISOString();
+
+                    setTimeout(() => {
+                        successMessage.classList.add('hidden');
+                    }, 4000);
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    alert("There was an error saving your submission. Please try again.");
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Save Submission';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
+</body>
+</html>
+
