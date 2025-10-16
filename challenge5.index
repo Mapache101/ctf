@@ -1,1 +1,396 @@
-Hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Griffin Viewer with Advanced Effects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Inter', sans-serif;
+        }
+        canvas {
+            width: 100%;
+            height: 100vh;
+            display: block;
+        }
+        
+        /* ## NEW: Winner Text Style ## */
+        #winnerText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 8vw; /* Responsive font size */
+            font-weight: 900;
+            text-align: center;
+            z-index: 100;
+            display: none; /* Hidden by default */
+            pointer-events: none; /* Allows mouse interaction with the 3D scene */
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.7);
+            -webkit-text-stroke: 1px black; /* Adds a thin black outline for readability */
+        }
+
+        #ui-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+        }
+        #effect-trigger {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            min-width: 220px; /* Ensures button size is consistent */
+        }
+        #effect-trigger:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        #effect-trigger:active {
+            transform: scale(0.95);
+        }
+        #effect-info {
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="winnerText">winner winner<br>chicken dinner</div>
+
+    <div id="ui-container">
+        <button id="effect-trigger">Start: Lightning Storm</button>
+        <div id="effect-info"></div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // ## 1. Scene Setup ##
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 8);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 1, 0);
+    controls.update();
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight.position.set(5, 10, 7.5);
+    scene.add(directionalLight);
+
+    // ## 2. Post-Processing ##
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass.strength = 1.2;
+    composer.addPass(bloomPass);
+
+    // ## 3. Effect Management ##
+    let effectState = 0;
+    const clock = new THREE.Clock();
+    let modelCenter = new THREE.Vector3();
+    let modelSize = new THREE.Vector3();
+
+    const effectThemes = [
+        { name: "Lightning Storm", effect: "lightning" },
+        { name: "Volcanic Shards", effect: "shards", shardColors: [new THREE.Color(0xff8c00), new THREE.Color(0xffa500), new THREE.Color(0xffff00)] },
+        { name: "Arctic Rings", effect: "rings", ringColors: [new THREE.Color(0x00ffff), new THREE.Color(0x87ceeb), new THREE.Color(0xffffff)] },
+        { name: "Emerald Spiral", effect: "spiral", spiralColors: [new THREE.Color(0x00ff00), new THREE.Color(0x32cd32), new THREE.Color(0xadff2f)] },
+        { name: "Solar Flare", effect: "flare", flareColors: [new THREE.Color(0xff4500), new THREE.Color(0xff6600), new THREE.Color(0xffa500), new THREE.Color(0xffff00), new THREE.Color(0xffd700)] }
+    ];
+
+    const effectGroups = {
+        lightning: new THREE.Group(), shards: new THREE.Group(), rings: new THREE.Group(), spiral: new THREE.Group(), flare: new THREE.Group()
+    };
+    scene.add(...Object.values(effectGroups));
+    
+    const effectData = {
+        lightning: { isActive: false, startTime: 0, duration: 1.0 },
+        shards: { isActive: false }, rings: { isActive: false }, spiral: { isActive: false }, flare: { isActive: false }
+    };
+
+    // ## 4. Model Loading ##
+    const loader = new GLTFLoader();
+    loader.load('griffin.glb', (gltf) => {
+        const model = gltf.scene;
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 5 / maxDim;
+        model.scale.set(scale, scale, scale);
+        model.position.sub(center.multiplyScalar(scale));
+        scene.add(model);
+        const modelBox = new THREE.Box3().setFromObject(model);
+        modelSize.copy(modelBox.getSize(new THREE.Vector3()));
+        modelCenter.copy(modelBox.getCenter(new THREE.Vector3()));
+        controls.target.copy(modelCenter);
+    });
+
+    // ## 5. Effect Creation Functions ##
+    const lightningMaterial = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uLife: { value: 0 }, uFlicker: { value: 1.0 } },
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `uniform float uTime, uLife, uFlicker; varying vec2 vUv; float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453); } float noise(vec2 st) { vec2 i = floor(st), f = fract(st); float a = random(i), b = random(i + vec2(1,0)), c = random(i + vec2(0,1)), d = random(i + vec2(1,1)); vec2 u = f*f*(3.0-2.0*f); return mix(a,b,u.x) + (c-a)*u.y*(1.0-u.x) + (d-b)*u.x*u.y; } void main() { float core = smoothstep(0.4, 0.0, abs(vUv.x - 0.5)); core += noise(vec2(vUv.y*40.0, uTime*2.0)) * noise(vec2(vUv.y*25.0, uTime*1.5)) * 0.8; vec3 color = mix(vec3(0.1,0.5,1.0), vec3(0.6,0.2,1.0), core*0.7); color = mix(color, vec3(1.0), pow(core, 2.0)*0.9); float lifeAlpha = smoothstep(0.0, 0.2, uLife) * (1.0 - smoothstep(0.6, 1.0, uLife)); float intense = sin(uLife * 3.14159 * 3.0) * 0.5 + 0.5; float alpha = pow(1.0 - abs(vUv.x - 0.5)*2.0, 2.0) * lifeAlpha * uFlicker * intense; gl_FragColor = vec4(color, alpha); }`,
+        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
+
+    function triggerLightning() {
+        if (effectData.lightning.isActive) return;
+        effectData.lightning.isActive = true;
+        effectData.lightning.startTime = clock.getElapsedTime();
+        effectGroups.lightning.clear(); // Clear old lightning
+        const numBolts = 3 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < numBolts; i++) {
+            const boltGeo = new THREE.PlaneGeometry(0.2 + Math.random() * 0.3, modelSize.y * (1.5 + Math.random()));
+            const bolt = new THREE.Mesh(boltGeo, lightningMaterial);
+            bolt.position.set(
+                (Math.random() - 0.5) * modelSize.x * 2.5,
+                modelCenter.y,
+                (Math.random() - 0.5) * modelSize.z * 2.5
+            );
+            bolt.lookAt(camera.position);
+            effectGroups.lightning.add(bolt);
+        }
+    }
+
+    function triggerShardBurst(colors) {
+        if (effectGroups.shards.children.length) return;
+        effectData.shards.isActive = true;
+        const origin = modelCenter.clone();
+        for (let i = 0; i < 300; i++) {
+            const geo = new THREE.ConeGeometry(0.015, 0.5, 4);
+            const mat = new THREE.MeshBasicMaterial({ color: colors[Math.floor(Math.random() * colors.length)], blending: THREE.AdditiveBlending, transparent: true });
+            const shard = new THREE.Mesh(geo, mat);
+            shard.position.copy(origin);
+            const dir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+            shard.lookAt(dir.clone().add(origin));
+            shard.rotateX(Math.PI / 2);
+            shard.userData.velocity = dir.multiplyScalar(0.08 + Math.random() * 0.12);
+            shard.userData.life = 1.0;
+            effectGroups.shards.add(shard);
+        }
+    }
+
+    function triggerRings(colors) {
+        if (effectGroups.rings.children.length) return;
+        effectData.rings.isActive = true;
+        const origin = modelCenter.clone();
+        for (let r = 0; r < 5; r++) {
+            const ringGeo = new THREE.RingGeometry(1.5 + r * 0.3, 1.6 + r * 0.3, 64);
+            const mat = new THREE.MeshBasicMaterial({ color: colors[r % colors.length], transparent: true, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+            const ring = new THREE.Mesh(ringGeo, mat);
+            ring.position.copy(origin);
+            ring.rotation.x = Math.PI / 2;
+            ring.userData.speed = 0.03 + r * 0.02;
+            ring.userData.life = 1.0;
+            effectGroups.rings.add(ring);
+        }
+    }
+
+    function triggerSpiral(colors) {
+        if (effectGroups.spiral.children.length) return;
+        effectData.spiral.isActive = true;
+        const origin = modelCenter.clone();
+        for (let i = 0; i < 200; i++) {
+            const geo = new THREE.SphereGeometry(0.04, 8, 6);
+            const mat = new THREE.MeshBasicMaterial({ color: colors[i % colors.length], blending: THREE.AdditiveBlending, transparent: true });
+            const p = new THREE.Mesh(geo, mat);
+            const angle = (i / 200) * Math.PI * 8;
+            const radius = 0.1 + (i / 200) * modelSize.x * 1.5;
+            p.position.set(Math.cos(angle) * radius + origin.x, origin.y - modelSize.y / 2 + (i / 200) * modelSize.y, Math.sin(angle) * radius + origin.z);
+            p.userData.angle = angle;
+            p.userData.radius = radius;
+            p.userData.life = 1.0;
+            p.userData.startY = p.position.y;
+            effectGroups.spiral.add(p);
+        }
+    }
+    
+    function triggerFlare(colors) {
+        if (effectGroups.flare.children.length) return;
+        effectData.flare.isActive = true;
+        const origin = modelCenter.clone();
+        for (let i = 0; i < 500; i++) {
+            const geo = new THREE.SphereGeometry(0.02 + Math.random() * 0.03, 8, 6);
+            const mat = new THREE.MeshBasicMaterial({ color: colors[i % colors.length], blending: THREE.AdditiveBlending, transparent: true });
+            const p = new THREE.Mesh(geo, mat);
+            p.position.copy(origin);
+            const dir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+            p.userData.velocity = dir.multiplyScalar(0.02 + Math.random() * 0.05);
+            p.userData.life = 1.0;
+            effectGroups.flare.add(p);
+        }
+    }
+
+    // ## NEW: Function to clear all active effects ##
+    function clearAllEffects() {
+        Object.keys(effectGroups).forEach(key => {
+            while (effectGroups[key].children.length > 0) {
+                effectGroups[key].remove(effectGroups[key].children[0]);
+            }
+            if (effectData[key]) {
+                effectData[key].isActive = false;
+            }
+        });
+        bloomPass.strength = 1.2; // Reset bloom to default
+    }
+
+    // ## NEW: Event listener to control effects and show winner text ##
+    const winnerText = document.getElementById('winnerText');
+    const effectTriggerBtn = document.getElementById('effect-trigger');
+
+    effectTriggerBtn.addEventListener('click', () => {
+        clearAllEffects();
+
+        // If we've gone past the last effect, show the winner text
+        if (effectState >= effectThemes.length) {
+            winnerText.style.display = 'block';
+            document.getElementById('ui-container').style.display = 'none'; // Hide button
+            return;
+        }
+
+        // Trigger the current effect based on the state
+        const currentTheme = effectThemes[effectState];
+        document.getElementById('effect-info').textContent = `Showing: ${currentTheme.name}`;
+        
+        switch (currentTheme.effect) {
+            case "lightning": triggerLightning(); break;
+            case "shards": triggerShardBurst(currentTheme.shardColors); break;
+            case "rings": triggerRings(currentTheme.ringColors); break;
+            case "spiral": triggerSpiral(currentTheme.spiralColors); break;
+            case "flare": triggerFlare(currentTheme.flareColors); break;
+        }
+
+        // Increment state for the *next* click
+        effectState++;
+
+        // Update button text for the next action
+        if (effectState < effectThemes.length) {
+            effectTriggerBtn.textContent = `Next: ${effectThemes[effectState].name}`;
+        } else {
+            effectTriggerBtn.textContent = `!!! REVEAL WINNER !!!`;
+        }
+    });
+
+    // ## 6. Animation Loop ##
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        const elapsedTime = clock.getElapsedTime();
+
+        // Update active effects
+        if (effectData.lightning.isActive) {
+            const life = (elapsedTime - effectData.lightning.startTime) / effectData.lightning.duration;
+            lightningMaterial.uniforms.uLife.value = life;
+            lightningMaterial.uniforms.uTime.value = elapsedTime;
+            lightningMaterial.uniforms.uFlicker.value = Math.random() > 0.05 ? 1.0 : 0.2;
+            bloomPass.strength = 2.0 + Math.sin(life * Math.PI * 3.0) * 1.5;
+            if (life > 1.0) effectData.lightning.isActive = false;
+        }
+        
+        if (effectData.shards.isActive) {
+            for (let i = effectGroups.shards.children.length - 1; i >= 0; i--) {
+                const shard = effectGroups.shards.children[i];
+                shard.position.add(shard.userData.velocity);
+                shard.userData.life -= 0.01;
+                shard.material.opacity = shard.userData.life;
+                if (shard.userData.life <= 0) effectGroups.shards.remove(shard);
+            }
+        }
+        
+        if (effectData.rings.isActive) {
+             for (let i = effectGroups.rings.children.length - 1; i >= 0; i--) {
+                const ring = effectGroups.rings.children[i];
+                ring.scale.x += ring.userData.speed;
+                ring.scale.y += ring.userData.speed;
+                ring.userData.life -= 0.008;
+                ring.material.opacity = Math.max(0, ring.userData.life);
+                if (ring.userData.life <= 0) effectGroups.rings.remove(ring);
+            }
+        }
+
+        if (effectData.spiral.isActive) {
+            const speed = 2.0;
+            for (let i = effectGroups.spiral.children.length - 1; i >= 0; i--) {
+                const p = effectGroups.spiral.children[i];
+                p.userData.angle += delta * speed;
+                p.position.x = Math.cos(p.userData.angle) * p.userData.radius + modelCenter.x;
+                p.position.z = Math.sin(p.userData.angle) * p.userData.radius + modelCenter.z;
+                p.position.y += delta * 0.5;
+                p.userData.life -= 0.005;
+                p.material.opacity = Math.max(0, p.userData.life);
+                if (p.userData.life <= 0) effectGroups.spiral.remove(p);
+            }
+        }
+        
+        if (effectData.flare.isActive) {
+            for (let i = effectGroups.flare.children.length - 1; i >= 0; i--) {
+                const p = effectGroups.flare.children[i];
+                p.position.add(p.userData.velocity);
+                p.userData.life -= 0.015;
+                p.material.opacity = p.userData.life;
+                if (p.userData.life <= 0) effectGroups.flare.remove(p);
+            }
+        }
+
+        controls.update();
+        composer.render();
+    }
+    animate();
+
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    </script>
+</body>
+</html>
