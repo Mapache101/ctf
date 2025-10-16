@@ -42,6 +42,13 @@
             word-wrap: break-word;
             white-space: pre-wrap;
         }
+        .error-box {
+            background-color: #2c0f0f;
+            border: 1px solid #a43a3a;
+            padding: 1rem;
+            border-radius: 6px;
+            color: #fca5a5;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen py-12">
@@ -109,42 +116,49 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        // These variables are provided by the environment.
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ctf-challenge-default';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let db, auth;
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAISWs8O4ZGS0tI-zRoq9yUvJJhXbqojQQ",
+          authDomain: "ctf-challenge-submissions.firebaseapp.com",
+          projectId: "ctf-challenge-submissions",
+          storageBucket: "ctf-challenge-submissions.appspot.com",
+          messagingSenderId: "37220080927",
+          appId: "1:37220080927:web:2fea5a697bfc99dc75c42a",
+          measurementId: "G-EF44Q4223Z"
+        };
         
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } catch (e) {
-            console.error("Firebase initialization failed:", e);
-            document.getElementById('submissions-log').innerHTML = '<p class="text-center text-red-500">Error: Could not connect to the database. Please check the console.</p>';
-        }
+        const appId = firebaseConfig.projectId; // Use projectId for the collection path
+        
+        let db, auth;
 
+        // --- Main Application Logic ---
         async function main() {
-             if (!db || !auth) return;
+            const submissionsLog = document.getElementById('submissions-log');
 
             try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                submissionsLog.innerHTML = '<p class="text-center text-red-500">Error: Could not connect to the database. Please check the console.</p>';
+                return;
+            }
+            
+            if (!db || !auth) return;
+
+            try {
+                await signInAnonymously(auth);
             } catch (error) {
                 console.error("Authentication Failed:", error);
-                document.getElementById('submissions-log').innerHTML = '<p class="text-center text-red-500">Authentication failed. Submissions cannot be saved or viewed.</p>';
+                submissionsLog.innerHTML = `<div class="error-box"><p>Authentication failed. Submissions cannot be saved or viewed. Check the console for more details.</p></div>`;
                 return;
             }
 
-            const submissionsLog = document.getElementById('submissions-log');
             const submissionsCollection = collection(db, `artifacts/${appId}/public/data/submissions`);
             
             // --- Listen for real-time submission updates ---
@@ -159,7 +173,7 @@
                 snapshot.docs.forEach(doc => {
                     const submission = doc.data();
                     const card = document.createElement('div');
-                    card.className = 'submission-card animate-fade-in';
+                    card.className = 'submission-card';
                     
                     let content = `<span class="terminal-text">Student(s):</span> ${submission.studentName}\n`;
                     content += `<span class="terminal-text">Start Time:</span> ${new Date(submission.startTime).toLocaleString()}\n`;
@@ -172,6 +186,9 @@
                     card.textContent = content;
                     submissionsLog.prepend(card); // Add new submissions to the top
                 });
+            }, (error) => {
+                console.error("Firestore snapshot error:", error);
+                submissionsLog.innerHTML = `<div class="error-box"><p>Error fetching submissions. Make sure your Firestore security rules are set up correctly.</p></div>`;
             });
 
             // --- Handle Form Submission ---
