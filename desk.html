@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Image Collage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the interactive collage */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* background-color: #f0f0, */ /* Replaced with a background image */
+            background-image: url('https://images.pexels.com/photos/164005/pexels-photo-164005.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Prevent scrollbars from appearing when dragging images */
+        }
+
+        #collage-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .draggable-image {
+            position: absolute;
+            cursor: grab;
+            transition: transform 0.1s ease-in-out, box-shadow 0.2s ease;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            user-select: none; /* Prevent text selection while dragging */
+        }
+        
+        /* Add base rotation classes */
+        .rotate-neg-15 {
+            transform: rotate(-15deg);
+        }
+        .rotate-pos-15 {
+            transform: rotate(15deg);
+        }
+        
+        .draggable-image:hover {
+             box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+             transform: scale(1.02);
+        }
+
+        /* Combine hover with rotation */
+        .rotate-neg-15:hover {
+            transform: rotate(-15deg) scale(1.02);
+        }
+        .rotate-pos-15:hover {
+            transform: rotate(15deg) scale(1.02);
+        }
+
+        .draggable-image.dragging {
+            cursor: grabbing;
+            z-index: 1000 !important; /* Ensure the dragged item is always on top while moving */
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.25);
+        }
+
+        /* Combine dragging with rotation */
+        .rotate-neg-15.dragging {
+            transform: rotate(-15deg) scale(1.05);
+        }
+        .rotate-pos-15.dragging {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+        .draggable-image img {
+            display: block;
+            width: 100%;
+            height: auto;
+            pointer-events: none; /* Make sure mouse events go to the parent div */
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="collage-container">
+        <!-- Images will be dynamically inserted here -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('collage-container');
+            
+            // --- Configuration ---
+            // Add your image URLs here
+            const imageUrls = [
+                // Example PNGs with transparency
+                'https://placehold.co/250x150/transparent/111827?text=Transparent+PNG',
+                'https://placehold.co/200x200/transparent/d1d5db?text=Drag+Me!',
+                // Regular images
+                'https://placehold.co/200x300/eab308/ffffff?text=Image+1',
+                'https://placehold.co/250x200/22c55e/ffffff?text=Image+2',
+                'https://placehold.co/300x350/3b82f6/ffffff?text=Image+3',
+                'https://placehold.co/220x280/ef4444/ffffff?text=Image+4',
+                'https://placehold.co/320x240/8b5cf6/ffffff?text=Image+5',
+            ];
+
+            let highestZIndex = 1; // To track which image is on top
+
+            // --- Create and Position Images ---
+            imageUrls.forEach((url, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('draggable-image');
+                
+                // Add rotation classes to the first two images
+                if (index === 0) {
+                    wrapper.classList.add('rotate-neg-15');
+                } else if (index === 1) {
+                    wrapper.classList.add('rotate-pos-15');
+                }
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Draggable Image';
+                // Add an error handler for broken image links
+                img.onerror = () => { 
+                    img.src = 'https://placehold.co/200x200/cccccc/999999?text=Image+Not+Found'; 
+                };
+
+                wrapper.appendChild(img);
+                container.appendChild(wrapper);
+
+                // Set initial random position
+                const containerRect = container.getBoundingClientRect();
+                const imgWidth = parseInt(url.split('/')[3].split('x')[0]) || 200; // Get width from URL or default
+                const imgHeight = parseInt(url.split('/')[3].split('x')[1]) || 200; // Get height from URL or default
+                
+                const randomX = Math.random() * (containerRect.width - imgWidth);
+                const randomY = Math.random() * (containerRect.height - imgHeight);
+
+                wrapper.style.left = `${randomX}px`;
+                wrapper.style.top = `${randomY}px`;
+                wrapper.style.zIndex = '1';
+            });
+            
+            // --- Drag and Drop Logic ---
+            let activeImage = null;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            function onMouseDown(e) {
+                // Work with both mouse and touch events
+                const target = e.currentTarget;
+                if (e.target.closest('.draggable-image') !== target) return;
+
+                activeImage = target;
+                activeImage.classList.add('dragging');
+                
+                // Bring the clicked image to the top
+                highestZIndex++;
+                activeImage.style.zIndex = highestZIndex;
+
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+
+                offsetX = clientX - activeImage.getBoundingClientRect().left;
+                offsetY = clientY - activeImage.getBoundingClientRect().top;
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+                document.addEventListener('touchmove', onMouseMove);
+                document.addEventListener('touchend', onMouseUp);
+            }
+            
+            function onMouseMove(e) {
+                if (!activeImage) return;
+
+                e.preventDefault(); // Prevent default browser actions like scrolling
+
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+
+                // Calculate new position
+                let newX = clientX - offsetX;
+                let newY = clientY - offsetY;
+                
+                // Constrain to container boundaries
+                const containerRect = container.getBoundingClientRect();
+                const imageRect = activeImage.getBoundingClientRect();
+
+                newX = Math.max(0, Math.min(newX, containerRect.width - imageRect.width));
+                newY = Math.max(0, Math.min(newY, containerRect.height - imageRect.height));
+                
+                activeImage.style.left = `${newX}px`;
+                activeImage.style.top = `${newY}px`;
+            }
+
+            function onMouseUp() {
+                if (!activeImage) return;
+                
+                activeImage.classList.remove('dragging');
+                activeImage = null;
+                
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('touchmove', onMouseMove);
+                document.removeEventListener('touchend', onMouseUp);
+            }
+
+            // Attach event listeners to all images
+            document.querySelectorAll('.draggable-image').forEach(img => {
+                img.addEventListener('mousedown', onMouseDown);
+                img.addEventListener('touchstart', onMouseDown, { passive: false });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
